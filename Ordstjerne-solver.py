@@ -5,10 +5,10 @@ import io
 import csv
 
 # Gets HTML content from ordstjernen
-def getPuzzle():
+def fetchPuzzle():
     words_url = "https://www.vg.no/spill/ordstjernen"
     response = requests.get(words_url)
-    print(f"Status Code: {response.status_code}")
+    print(f"Ordstjernen: status code: {response.status_code}")
 
     # Parses the HTML content and returns Puzzle ID and Characters
     soup = bs4.BeautifulSoup(response.content, 'html.parser')
@@ -30,7 +30,7 @@ def getPuzzle():
 
     return puzzle_id, char, char_main
 
-def getValidWords(char_main, char):
+def fetchValidWords(char_main, char):
     # Gets CSV content from ord.uib.no
     ordbbok_url = "https://ord.uib.no/bm/fil/boys.csv"
     print(f"Getting CSV from: {ordbbok_url}")
@@ -40,9 +40,8 @@ def getValidWords(char_main, char):
 
     valid_words = []
     reader = csv.reader(ordbok, delimiter='|')
-    # print(f"First line of csv: {next(reader)[0:3]}\n")  # Print the first row
 
-    print("Filtering out valid words...")
+    print("Filtering valid words...")
     # Filter out valid words to be used in the puzzle
     for row in reader:
         # Iterate over each column in the row
@@ -58,7 +57,7 @@ def getValidWords(char_main, char):
     return valid_words
 
 
-def sendOrdstjerneQuery(puzzle_id, word):
+def queryPuzzleWord(puzzle_id, word):
     api_url = f"https://stokkom-api.k8s.vgnett.no/words/{puzzle_id}"
 
     params = {
@@ -70,10 +69,10 @@ def sendOrdstjerneQuery(puzzle_id, word):
 
 
 def main():
-    puzzle_id, char, char_main = getPuzzle()
-    valid_words = getValidWords(char_main, char)
+    puzzle_id, char, char_main = fetchPuzzle()
+    valid_words = fetchValidWords(char_main, char)
 
     for word in valid_words:
-        sendOrdstjerneQuery(puzzle_id, word)
+        queryPuzzleWord(puzzle_id, word)
 
 main()
