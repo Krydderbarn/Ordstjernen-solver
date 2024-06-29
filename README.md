@@ -1,4 +1,4 @@
-Ordstjerne Solver is a script that solves todays puzzle from VG's Ordstjerne puzzle at https://www.vg.no/spill/ordstjernen
+Ordstjerne Solver is a script that solves todays puzzle from [VG Ordstjernen](https://www.vg.no/spill/ordstjernen)
 
 ## Installering
 Install dependencies using:
