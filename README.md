@@ -7,6 +7,7 @@ Install dependencies using:
 pip install -r requirements.txt
 ```
 
-The script gets todays puzzle from the website, compares the characters to https://ordbokene.no/bm
-
+## Function
+The script fetches todays puzzle from Ordstjernen, compares todays characters to https://ord.uib.no which is the dictionary used by the puzzle.
 A CSV file is extraced from the site https://ord.uib.no/bm/fil/boys.csv which is then compared to the letters to find every valid word.
+The words are then sent to the Ordstjernen puzzle as GET requests
