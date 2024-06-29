@@ -10,8 +10,7 @@ def fetchPuzzle():
 
     try:
         response = requests.get(words_url)
-        if response.status_code != 200:
-            raise ValueError(f"Error fetching data: Status code {response.status_code}")
+        response.raise_for_status()
     except requests.exceptions.RequestException as e:
         raise SystemExit(e)
     
@@ -43,25 +42,21 @@ def fetchValidWords(char_main, char):
 
     try:
         response = requests.get(ordbbok_url)
-        if response.status_code != 200:
-            raise ValueError(f"Error fetching data: Status code {response.status_code}")
+        response.raise_for_status()
     except requests.exceptions.RequestException as e:
         raise SystemExit(e)
     
     ordbok = io.StringIO(response.text)
-
-    valid_words = []
     reader = csv.reader(ordbok, delimiter='|')
 
     print("Filtering valid words...")
+    valid_words = []
     # Filter out valid words to be used in the puzzle
     for row in reader:
         # Iterate over each column in the row
         for word in row:
             # Check if the word contains char_main
-            if len(word) > 3:
-                if char_main in word:
-                    if all(c in char or c == char_main for c in word):
+            if len(word) > 3 and char_main in word and all(c in char or c == char_main for c in word):
                         if word not in valid_words:
                             valid_words.append(word)
 
