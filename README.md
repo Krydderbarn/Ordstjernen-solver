@@ -2,7 +2,7 @@
 
 Ordstjerne Solver is a script that solves todays puzzle from [VG Ordstjernen](https://www.vg.no/spill/ordstjernen)
 
-## Installering
+## Installation
 Install dependencies using:
 
 ``` sh
