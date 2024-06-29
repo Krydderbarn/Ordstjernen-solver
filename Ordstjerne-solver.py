@@ -7,10 +7,15 @@ import csv
 # Gets HTML content from ordstjernen
 def fetchPuzzle():
     words_url = "https://www.vg.no/spill/ordstjernen"
-    response = requests.get(words_url)
-    print(f"Ordstjernen: status code: {response.status_code}")
 
-    # Parses the HTML content and returns Puzzle ID and Characters
+    try:
+        response = requests.get(words_url)
+        if response.status_code != 200:
+            raise ValueError(f"Error fetching data: Status code {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        raise SystemExit(e)
+    
+    # Returns Puzzle ID and Characters from the puzzle
     soup = bs4.BeautifulSoup(response.content, 'html.parser')
     script = soup.find("script", id="__NEXT_DATA__")
     data = json.loads(script.string)
@@ -26,17 +31,24 @@ def fetchPuzzle():
     print(f"""
     Puzzle ID: {puzzle_id}
     Chars: {char}
-    Main Char: {char_main}""")
+    Main Char: {char_main}
+    """)
 
     return puzzle_id, char, char_main
 
 def fetchValidWords(char_main, char):
-    # Gets CSV content from ord.uib.no
+    # Fetches dictionary in CSV from ord.uib.no
     ordbbok_url = "https://ord.uib.no/bm/fil/boys.csv"
     print(f"Getting CSV from: {ordbbok_url}")
 
-    ordbok_response = requests.get(ordbbok_url)
-    ordbok = io.StringIO(ordbok_response.text)
+    try:
+        response = requests.get(ordbbok_url)
+        if response.status_code != 200:
+            raise ValueError(f"Error fetching data: Status code {response.status_code}")
+    except requests.exceptions.RequestException as e:
+        raise SystemExit(e)
+    
+    ordbok = io.StringIO(response.text)
 
     valid_words = []
     reader = csv.reader(ordbok, delimiter='|')
@@ -53,19 +65,16 @@ def fetchValidWords(char_main, char):
                         if word not in valid_words:
                             valid_words.append(word)
 
-    print(f"Antall gyldige ord: {len(valid_words)}")
+    print(f"Valid words: {len(valid_words)}")
     return valid_words
 
 
 def queryPuzzleWord(puzzle_id, word):
     api_url = f"https://stokkom-api.k8s.vgnett.no/words/{puzzle_id}"
-
-    params = {
-        "word": f"{word}"
-    }
+    params = {"word": f"{word}"}
 
     response = requests.get(api_url, params=params)
-    print(f"Word: {word}, Status: {response.status_code}, Response: {response.text}")
+    print(f"{response.text}")
 
 
 def main():
@@ -75,4 +84,6 @@ def main():
     for word in valid_words:
         queryPuzzleWord(puzzle_id, word)
 
-main()
+
+if __name__ == "__main__":
+    main()
